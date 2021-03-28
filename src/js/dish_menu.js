@@ -1,17 +1,39 @@
-import dishCards from '../templates/restorant_menu.hbs';
-import dish from '../js/menu.json';
+import template from '../templates/restorant_menu.hbs';
+import data from '../js/menu.json';
 
 const Theme = {
-    LIGHT: 'light-theme',
-    DARK: 'dark-theme',
-  };
+  LIGHT: 'light-theme',
+  DARK: 'dark-theme',
+};
 
-const menuCardsRef = document.querySelector('.js-menu');
+const refs = {
+  list: document.querySelector('.js-menu'),
+  input: document.querySelector('.theme-switch__toggle'),
+  body: document.body,
+};
 
-const markup = createMenuMarkup(dish);
+refs.body.classList.add(
+  localStorage.getItem('theme') === null
+    ? Theme.LIGHT
+    : localStorage.getItem('theme'),
+);
+refs.input.checked = localStorage.getItem('theme') === Theme.DARK;
+const markup = template(data);
 
-menuCardsRef.insertAdjacentHTML('beforeend', markup);
+refs.list.insertAdjacentHTML('beforeend', markup);
 
-function createMenuMarkup (dish){
-    return dish.map(dishCards).join('');
-} 
+refs.input.addEventListener('change', inputChangeOn);
+
+function changeTheme(add, rem){
+  refs.body.classList.remove(rem);
+    refs.body.classList.add(add);
+    localStorage.setItem('theme', add);
+}
+
+function inputChangeOn({ target }) {
+  if (target.checked) {
+    changeTheme(Theme.DARK, Theme.LIGHT);
+  } else {
+    changeTheme(Theme.LIGHT, Theme.DARK);
+  }
+}
